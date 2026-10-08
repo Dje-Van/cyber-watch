@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Watch — V1</title>
+<style>
+:root{
+  --bg:#f4f7fb;--panel:#fff;--sidebar:#0b1f3a;--sidebar2:#102c50;
+  --primary:#1261a0;--primary2:#1683c7;--text:#172033;--muted:#6b778c;
+  --border:#dfe6ef;--danger:#c62828;--warning:#d98200;--success:#16805c;
+  --info:#2878b8;--shadow:0 8px 25px rgba(20,45,80,.08)
+}
+*{box-sizing:border-box} body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit} button{cursor:pointer}
+.app{display:flex;min-height:100vh}.sidebar{width:250px;background:linear-gradient(180deg,var(--sidebar),#07172c);color:#fff;padding:22px 15px;position:fixed;inset:0 auto 0 0}
+.logo{display:flex;align-items:center;gap:12px;padding:8px 10px 24px;border-bottom:1px solid rgba(255,255,255,.12)}
+.logo-icon{width:42px;height:42px;border-radius:12px;background:#1b76b9;display:grid;place-items:center;font-size:23px}
+.logo h1{font-size:18px;margin:0}.logo small{opacity:.65}.nav{margin-top:22px}.nav button{display:flex;width:100%;border:0;background:transparent;color:#cbd7e7;padding:12px 13px;border-radius:9px;text-align:left;gap:12px;margin:4px 0}.nav button:hover,.nav button.active{background:rgba(42,133,201,.25);color:#fff}.nav .ico{width:22px}
+.sidebar-foot{position:absolute;bottom:18px;left:20px;right:20px;font-size:11px;color:#91a3b9}
+.main{margin-left:250px;width:calc(100% - 250px);padding:25px 30px}.top{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px}.top h2{margin:0 0 5px;font-size:25px}.top p{margin:0;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--border);background:#fff;padding:9px 13px;border-radius:8px;color:var(--text)}.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn:hover{filter:brightness(.97)}
+.banner{background:#eaf4fc;border:1px solid #c9e3f5;color:#17577e;padding:11px 14px;border-radius:9px;margin-bottom:18px;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:var(--shadow)}.metric{display:flex;justify-content:space-between}.metric .num{font-size:30px;font-weight:700}.metric .label{color:var(--muted);font-size:13px}.metric-icon{width:42px;height:42px;border-radius:10px;background:#edf5fc;display:grid;place-items:center;font-size:20px}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-top:18px}.card h3{margin:0 0 15px;font-size:16px}
+.chart{display:flex;align-items:flex-end;height:180px;gap:12px;padding:15px 5px 0;border-top:1px solid var(--border)}.bar-wrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px}.bar{width:75%;max-width:42px;background:linear-gradient(180deg,var(--primary2),var(--primary));border-radius:6px 6px 0 0;min-height:4px}.bar-label{font-size:11px;color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:10px}.item{border:1px solid var(--border);border-radius:9px;padding:12px;background:#fff}.item-title{font-weight:600;font-size:14px}.meta{font-size:11px;color:var(--muted);margin-top:5px}.badge{display:inline-block;padding:3px 7px;border-radius:20px;font-size:10px;font-weight:700;margin-right:5px}.critical{background:#fde7e7;color:#a51f1f}.high{background:#fff0df;color:#a65d00}.medium{background:#fff8d9;color:#866600}.low{background:#e9f6ef;color:#16724f}.info{background:#e9f2fb;color:#236b9f}
+.page{display:none}.page.active{display:block}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.toolbar input,.toolbar select{background:#fff;border:1px solid var(--border);border-radius:8px;padding:9px 11px}.toolbar input{min-width:260px;flex:1}
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:auto;box-shadow:var(--shadow)}table{border-collapse:collapse;width:100%;min-width:800px}th,td{padding:12px 13px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}th{background:#f7f9fc;color:#536175;font-size:11px;text-transform:uppercase}tr:hover td{background:#fafcff}.click{cursor:pointer}
+.detail{position:fixed;right:0;top:0;bottom:0;width:min(500px,95vw);background:#fff;box-shadow:-10px 0 30px rgba(0,0,0,.15);z-index:10;padding:24px;overflow:auto;transform:translateX(105%);transition:.25s}.detail.open{transform:none}.overlay{display:none;position:fixed;inset:0;background:rgba(4,16,30,.35);z-index:9}.overlay.open{display:block}.close{float:right;border:0;background:#eef2f6;border-radius:7px;width:32px;height:32px}.detail h2{margin-top:45px;font-size:21px}.detail p{line-height:1.6;color:#4d596b}.detail .box{background:#f6f8fb;border-radius:9px;padding:12px;margin-top:12px;font-size:13px}
+.empty{text-align:center;padding:40px;color:var(--muted)}.status{font-size:11px;padding:4px 7px;border-radius:5px;background:#eef2f5}.fav{border:0;background:none;font-size:18px}
+.form{display:grid;gap:12px}.form label{font-size:12px;color:var(--muted);font-weight:600}.form input,.form select,.form textarea{width:100%;border:1px solid var(--border);padding:10px;border-radius:8px}.form textarea{min-height:100px}
+footer{margin-top:25px;text-align:center;color:#8b96a7;font-size:11px}
+@media(max-width:900px){.sidebar{width:70px;padding:15px 9px}.logo h1,.logo small,.nav span,.sidebar-foot{display:none}.main{margin-left:70px;width:calc(100% - 70px);padding:18px}.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:560px){.cards{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.main{padding:13px}.toolbar input{min-width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="logo"><div class="logo-icon">🛡️</div><div><h1>Cyber Watch</h1><small>Veille cybersécurité</small></div></div>
+  <nav class="nav">
+    <button class="active" data-page="dashboard">📊 <span>Tableau de bord</span></button>
+    <button data-page="alerts">🚨 <span>Alertes</span></button>
+    <button data-page="vulns">🧩 <span>Vulnérabilités / CVE</span></button>
+    <button data-page="leaks">💧 <span>Fuites de données</span></button>
+    <button data-page="news">📰 <span>Actualités</span></button>
+    <button data-page="threats">🎣 <span>Phishing & menaces</span></button>
+    <button data-page="favorites">⭐ <span>Favoris</span></button>
+    <button data-page="settings">⚙️ <span>Paramètres / données</span></button>
+  </nav>
+  <div class="sidebar-foot">Cyber Watch V1 • HTML autonome<br>Mode démonstration</div>
+</aside>
+
+<main class="main">
+<header class="top">
+  <div><h2 id="pageTitle">Tableau de bord</h2><p id="pageSubtitle">Vue synthétique de la veille cybersécurité</p></div>
+  <div class="actions"><button class="btn" onclick="refreshData()">↻ Actualiser</button><button class="btn primary" onclick="openAdd()">＋ Ajouter</button></div>
+</header>
+
+<div class="banner">ℹ️ <b>Mode démonstration :</b> les données affichées sont des exemples intégrés à la V1. La version GitHub Pages fonctionne sans serveur et conserve tes modifications dans le navigateur.</div>
+
+<section id="dashboard" class="page active">
+  <div class="cards">
+    <div class="card metric"><div><div class="label">Éléments surveillés</div><div class="num" id="mTotal">0</div></div><div class="metric-icon">📡</div></div>
+    <div class="card metric"><div><div class="label">Critiques / hautes</div><div class="num" id="mCritical">0</div></div><div class="metric-icon">🚨</div></div>
+    <div class="card metric"><div><div class="label">Vulnérabilités CVE</div><div class="num" id="mCve">0</div></div><div class="metric-icon">🧩</div></div>
+    <div class="card metric"><div><div class="label">Fuites de données</div><div class="num" id="mLeaks">0</div></div><div class="metric-icon">💧</div></div>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>Répartition par catégorie</h3><div class="chart" id="chart"></div></div>
+    <div class="card"><h3>Dernières alertes</h3><div class="list" id="latest"></div></div>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>Priorités à traiter</h3><div class="list" id="priority"></div></div>
+    <div class="card"><h3>Sources de veille</h3><div class="list" id="sources"></div></div>
+  </div>
+</section>
+
+<section id="alerts" class="page"><div class="toolbar"><input id="searchAlerts" placeholder="Rechercher une alerte..." oninput="renderPage('alerts')"><select id="sevAlerts" onchange="renderPage('alerts')"><option value="">Toutes sévérités</option><option>Critique</option><option>Haute</option><option>Moyenne</option><option>Faible</option></select></div><div class="table-wrap" id="alertsTable"></div></section>
+<section id="vulns" class="page"><div class="toolbar"><input id="searchVulns" placeholder="Rechercher CVE, produit..." oninput="renderPage('vulns')"><select id="sevVulns" onchange="renderPage('vulns')"><option value="">Toutes sévérités</option><option>Critique</option><option>Haute</option><option>Moyenne</option><option>Faible</option></select></div><div class="table-wrap" id="vulnsTable"></div></section>
+<section id="leaks" class="page"><div class="toolbar"><input id="searchLeaks" placeholder="Rechercher une fuite..." oninput="renderPage('leaks')"></div><div class="table-wrap" id="leaksTable"></div></section>
+<section id="news" class="page"><div class="toolbar"><input id="searchNews" placeholder="Rechercher une actualité..." oninput="renderPage('news')"></div><div class="table-wrap" id="newsTable"></div></section>
+<section id="threats" class="page"><div class="toolbar"><input id="searchThreats" placeholder="Rechercher phishing, ransomware..." oninput="renderPage('threats')"></div><div class="table-wrap" id="threatsTable"></div></section>
+<section id="favorites" class="page"><div class="table-wrap" id="favoritesTable"></div></section>
+
+<section id="settings" class="page">
+  <div class="grid">
+    <div class="card"><h3>Données locales</h3>
+      <p style="color:var(--muted);font-size:13px">Les données sont enregistrées dans le <b>localStorage</b> de ton navigateur.</p>
+      <div class="actions"><button class="btn primary" onclick="exportJSON()">⬇ Exporter JSON</button><button class="btn" onclick="document.getElementById('fileInput').click()">⬆ Importer JSON</button><button class="btn" onclick="resetData()">↺ Réinitialiser</button></div>
+      <input type="file" id="fileInput" accept=".json" style="display:none" onchange="importJSON(event)">
+    </div>
+    <div class="card"><h3>État de l'application</h3><div class="item"><b>Version</b><br><span class="meta">Cyber Watch V1 HTML</span></div><div class="item"><b>Dernière actualisation</b><br><span class="meta" id="lastRefresh">—</span></div><div class="item"><b>Hébergement recommandé</b><br><span class="meta">GitHub Pages</span></div></div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>Passage à la V2</h3><p style="color:var(--muted)">La V1 est volontairement autonome. Une V2 pourra connecter automatiquement CERT-FR, CISA KEV, NVD/CVE, RSS, flux de fuites et autres sources via une API/backend, avec authentification, historique et notifications.</p></div>
+</section>
+<footer>Cyber Watch V1 • Application HTML autonome • Données de démonstration</footer>
+</main>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+<aside class="detail" id="detail"><button class="close" onclick="closeDetail()">✕</button><div id="detailContent"></div></aside>
+
+<script>
+const DEMO=[
+{id:1,type:"Alerte",cat:"Alerte",sev:"Critique",title:"Campagne de compromission ciblant les comptes professionnels",source:"CERT-FR",date:"2026-10-08",status:"À traiter",desc:"Exemple de fiche de veille. Vérifier les comptes concernés, renforcer MFA et rechercher les indicateurs de compromission."},
+{id:2,type:"CVE",cat:"Vulnérabilité",sev:"Critique",title:"Vulnérabilité critique affectant un composant serveur",source:"NVD",date:"2026-10-07",status:"À traiter",desc:"Exemple de vulnérabilité CVE. Identifier les actifs exposés, vérifier le correctif et documenter la remédiation."},
+{id:3,type:"Fuite",cat:"Fuite",sev:"Haute",title:"Exposition de données d'un service en ligne",source:"Veille OSINT",date:"2026-10-07",status:"En analyse",desc:"Exemple de signalement. Qualifier les données exposées et déterminer les impacts RGPD et sécurité."},
+{id:4,type:"Actualité",cat:"Actualité",sev:"Moyenne",title:"Les ransomwares poursuivent leur évolution vers l'extorsion multiple",source:"The Hacker News",date:"2026-10-06",status:"Surveillé",desc:"Exemple d'actualité destinée à illustrer le tableau de veille."},
+{id:5,type:"Menace",cat:"Phishing",sev:"Haute",title:"Nouvelle vague de phishing imitant un support informatique",source:"ANSSI / veille interne",date:"2026-10-05",status:"À traiter",desc:"Exemple de campagne. Sensibiliser les utilisateurs, contrôler les domaines et rappeler les procédures de signalement."},
+{id:6,type:"CVE",cat:"Vulnérabilité",sev:"Haute",title:"Correctif de sécurité disponible pour une solution VPN",source:"CISA KEV",date:"2026-10-04",status:"En cours",desc:"Exemple de vulnérabilité prioritaire. Vérifier l'exposition Internet et appliquer les recommandations de l'éditeur."},
+{id:7,type:"Actualité",cat:"Actualité",sev:"Faible",title:"Publication d'un nouveau guide de bonnes pratiques cyber",source:"ANSSI",date:"2026-10-03",status:"Surveillé",desc:"Exemple de contenu de sensibilisation."},
+{id:8,type:"Fuite",cat:"Fuite",sev:"Haute",title:"Base de données exposée sur Internet",source:"Veille OSINT",date:"2026-10-02",status:"À traiter",desc:"Exemple de fuite. Ne pas télécharger ni manipuler de données personnelles ; qualifier uniquement les informations nécessaires."},
+{id:9,type:"Menace",cat:"Ransomware",sev:"Critique",title:"Opération ransomware ciblant des infrastructures françaises",source:"Veille cyber",date:"2026-10-01",status:"En analyse",desc:"Exemple de menace. Rechercher les indicateurs publiés et vérifier les sauvegardes hors ligne."}
+];
+
+let data=JSON.parse(localStorage.getItem("cyberwatch_data")||"null")||DEMO;
+let currentPage="dashboard";
+
+const sevClass=s=>({"Critique":"critical","Haute":"high","Moyenne":"medium","Faible":"low"}[s]||"info");
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+function save(){localStorage.setItem("cyberwatch_data",JSON.stringify(data));}
+function fmt(d){return new Date(d+"T12:00:00").toLocaleDateString("fr-FR");}
+function rows(items){
+ if(!items.length)return '<div class="empty">Aucun élément trouvé.</div>';
+ return `<table><thead><tr><th>Élément</th><th>Catégorie</th><th>Sévérité</th><th>Source</th><th>Date</th><th>État</th><th>★</th></tr></thead><tbody>`+
+ items.map(x=>`<tr class="click" onclick="openDetail(${x.id})"><td><b>${esc(x.title)}</b><div class="meta">${esc(x.type)}</div></td><td>${esc(x.cat)}</td><td><span class="badge ${sevClass(x.sev)}">${esc(x.sev)}</span></td><td>${esc(x.source)}</td><td>${fmt(x.date)}</td><td><span class="status">${esc(x.status)}</span></td><td><button class="fav" onclick="event.stopPropagation();toggleFav(${x.id})">${x.favorite?"★":"☆"}</button></td></tr>`).join("")+"</tbody></table>";
+}
+function filtered(page){
+ const q=(document.getElementById("search"+page.charAt(0).toUpperCase()+page.slice(1))?.value||"").toLowerCase();
+ const sev=document.getElementById("sev"+page.charAt(0).toUpperCase()+page.slice(1))?.value||"";
+ let arr=data;
+ if(page==="alerts")arr=data.filter(x=>x.type==="Alerte");
+ if(page==="vulns")arr=data.filter(x=>x.type==="CVE");
+ if(page==="leaks")arr=data.filter(x=>x.type==="Fuite");
+ if(page==="news")arr=data.filter(x=>x.type==="Actualité");
+ if(page==="threats")arr=data.filter(x=>x.type==="Menace");
+ if(page==="favorites")arr=data.filter(x=>x.favorite);
+ if(q)arr=arr.filter(x=>(x.title+" "+x.desc+" "+x.source+" "+x.cat).toLowerCase().includes(q));
+ if(sev)arr=arr.filter(x=>x.sev===sev);
+ return arr;
+}
+function renderPage(page=currentPage){
+ if(page!=="dashboard")document.getElementById(page+"Table").innerHTML=rows(filtered(page));
+ renderDashboard();
+}
+function renderDashboard(){
+ document.getElementById("mTotal").textContent=data.length;
+ document.getElementById("mCritical").textContent=data.filter(x=>x.sev==="Critique"||x.sev==="Haute").length;
+ document.getElementById("mCve").textContent=data.filter(x=>x.type==="CVE").length;
+ document.getElementById("mLeaks").textContent=data.filter(x=>x.type==="Fuite").length;
+ const cats=["Alerte","Vulnérabilité","Fuite","Actualité","Phishing","Ransomware"];
+ const vals=cats.map(c=>data.filter(x=>x.cat===c).length); const max=Math.max(1,...vals);
+ document.getElementById("chart").innerHTML=cats.map((c,i)=>`<div class="bar-wrap"><div class="bar" style="height:${Math.max(5,vals[i]/max*145)}px" title="${vals[i]}"></div><div class="bar-label">${c}</div></div>`).join("");
+ const latest=[...data].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+ document.getElementById("latest").innerHTML=latest.map(x=>`<div class="item click" onclick="openDetail(${x.id})"><div class="item-title"><span class="badge ${sevClass(x.sev)}">${x.sev}</span>${esc(x.title)}</div><div class="meta">${esc(x.source)} • ${fmt(x.date)}</div></div>`).join("");
+ const priority=data.filter(x=>x.status==="À traiter").sort((a,b)=>({Critique:0,Haute:1,Moyenne:2,Faible:3}[a.sev]-({Critique:0,Haute:1,Moyenne:2,Faible:3}[b.sev]))).slice(0,5);
+ document.getElementById("priority").innerHTML=priority.length?priority.map(x=>`<div class="item click" onclick="openDetail(${x.id})"><div class="item-title">🚨 ${esc(x.title)}</div><div class="meta">${x.sev} • ${esc(x.cat)}</div></div>`).join(""):'<div class="empty">Aucune priorité.</div>';
+ document.getElementById("sources").innerHTML=["CERT-FR / ANSSI","CISA KEV","NVD / CVE","The Hacker News","Veille OSINT"].map(s=>`<div class="item"><b>${s}</b><div class="meta">Source à connecter dans une future V2</div></div>`).join("");
+}
+function openDetail(id){
+ const x=data.find(a=>a.id===id);if(!x)return;
+ document.getElementById("detailContent").innerHTML=`<div><span class="badge ${sevClass(x.sev)}">${esc(x.sev)}</span><span class="status">${esc(x.status)}</span></div><h2>${esc(x.title)}</h2><p>${esc(x.desc)}</p><div class="box"><b>Type</b><br>${esc(x.type)}</div><div class="box"><b>Catégorie</b><br>${esc(x.cat)}</div><div class="box"><b>Source</b><br>${esc(x.source)}</div><div class="box"><b>Date</b><br>${fmt(x.date)}</div><div style="margin-top:18px"><button class="btn primary" onclick="toggleFav(${x.id});openDetail(${x.id})">${x.favorite?"★ Retirer des favoris":"☆ Ajouter aux favoris"}</button></div>`;
+ document.getElementById("overlay").classList.add("open");document.getElementById("detail").classList.add("open");
+}
+function closeDetail(){document.getElementById("overlay").classList.remove("open");document.getElementById("detail").classList.remove("open")}
+function toggleFav(id){const x=data.find(a=>a.id===id);if(x){x.favorite=!x.favorite;save();renderPage(currentPage);}}
+function openAdd(){
+ const title=prompt("Titre de l'élément :");if(!title)return;
+ const types=["Alerte","CVE","Fuite","Actualité","Menace"];const type=prompt("Type (Alerte, CVE, Fuite, Actualité, Menace) :", "Alerte")||"Alerte";
+ const sev=prompt("Sévérité (Critique, Haute, Moyenne, Faible) :","Moyenne")||"Moyenne";
+ data.unshift({id:Date.now(),type,cat:type==="CVE"?"Vulnérabilité":type==="Menace"?"Phishing":type,sev,title,source:"Ajout manuel",date:new Date().toISOString().slice(0,10),status:"À traiter",desc:"Élément ajouté manuellement dans Cyber Watch V1."});
+ save();renderPage(currentPage);alert("Élément ajouté.");
+}
+function refreshData(){document.getElementById("lastRefresh").textContent=new Date().toLocaleString("fr-FR");alert("Actualisation locale terminée. La V1 HTML ne récupère pas encore de flux Internet automatiquement.");renderPage(currentPage);}
+function exportJSON(){const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="cyber-watch-data.json";a.click();URL.revokeObjectURL(a.href)}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;data=d;save();renderPage(currentPage);alert("Import réussi.");}catch{alert("Fichier JSON invalide.");}};r.readAsText(f)}
+function resetData(){if(confirm("Réinitialiser toutes les données locales ?")){data=JSON.parse(JSON.stringify(DEMO));save();renderPage(currentPage)}}
+
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ currentPage=b.dataset.page;document.getElementById(currentPage).classList.add("active");
+ const titles={dashboard:["Tableau de bord","Vue synthétique de la veille cybersécurité"],alerts:["Alertes","Alertes et signalements à qualifier"],vulns:["Vulnérabilités / CVE","Suivi des vulnérabilités de sécurité"],leaks:["Fuites de données","Signalements d'exposition ou de fuite"],news:["Actualités","Actualités cybersécurité"],threats:["Phishing & menaces","Campagnes et menaces observées"],favorites:["Favoris","Éléments marqués pour suivi"],settings:["Paramètres / données","Gestion des données locales"]};
+ document.getElementById("pageTitle").textContent=titles[currentPage][0];document.getElementById("pageSubtitle").textContent=titles[currentPage][1];renderPage(currentPage);
+});
+renderDashboard();
+document.getElementById("lastRefresh").textContent=new Date().toLocaleString("fr-FR");
+</script>
+</body>
+</html>
